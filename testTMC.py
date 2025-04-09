@@ -12,7 +12,7 @@ import numpy as np
 from subprocess import Popen
 
 GPCC_MULTIPLE = 1
-list_orifile = ['file/Ply/2851.ply']
+list_orifile = ['file/Ply/boxer_viewdep_vox9.ply']
 if __name__ == "__main__":
     print("****TMC V14****")
     print(datetime.datetime.now().strftime('%Y-%m-%d:%H:%M:%S'))
