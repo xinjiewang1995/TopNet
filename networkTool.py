@@ -1,11 +1,3 @@
-'''
-Author: fuchy@stu.pku.edu.cn
-LastEditTime: 2025
-LastEditors: WXJ
-Description: Network parameters and helper functions
-FilePath: /compression/networkTool.py
-'''
-
 import torch
 import os, random
 import numpy as np
