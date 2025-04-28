@@ -1,8 +1,3 @@
-'''
-Author: fuchy@stu.pku.edu.cn
-LastEditors: WXJ
-Description: 
-'''
 from ctypes import *
 import numpy as np
 import os
