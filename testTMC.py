@@ -1,9 +1,3 @@
-'''
-Author: fuchy@stu.pku.edu.cn
-LastEditors: WXJ
-Description: this file encodes MAT Files
-FilePath: /compression/encoderTool.py
-'''
 import datetime, os
 import pt as pointCloud
 import numpy as np

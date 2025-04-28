@@ -1,11 +1,3 @@
-'''
-Author: fuchy@stu.pku.edu.cn
-LastEditTime: 2025
-LastEditors: WXJ
-Description: this file encodes point cloud
-FilePath: /compression/encoder.py
-All rights reserved.
-'''
 from numpy import mod
 from Preparedata.data import dataPrepare
 from encoderTool import main

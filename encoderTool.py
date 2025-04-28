@@ -1,10 +1,3 @@
-'''
-Author: fuchy@stu.pku.edu.cn
-Description: The encoder helper
-FilePath: /compression/encoderTool.py
-'''
-
-# %%
 import numpy as np
 import torch
 import time
@@ -19,9 +12,6 @@ def generate_square_subsequent_mask(sz):
     mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
     mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
     return mask
-
-
-# %%
 
 '''
 description: Rearrange data for batch processing

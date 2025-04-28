@@ -1,9 +1,3 @@
-'''
-Author: fuchy@stu.pku.edu.cn
-Description: Octree 
-FilePath: /compression/Octree.py
-All rights reserved.
-'''
 import numpy as np
 from OctreeCPP.Octreewarpper import GenOctree
 

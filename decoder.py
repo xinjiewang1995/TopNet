@@ -1,13 +1,3 @@
-'''
-Author: fuchy@stu.pku.edu.cn
-Date: 2021-09-17 23:30:48
-LastEditTime: 2025
-LastEditors: WXJ
-Description: decoder
-FilePath: /compression/decoder.py
-All rights reserved.
-'''
-# %%
 import numpy as np
 import torch
 from tqdm import tqdm
@@ -24,7 +14,7 @@ import numpyAc
 
 batch_size = 1
 bpttRepeatTime = 1
-# %%
+
 '''
 description: decode bin file to occupancy code
 param {str;input bin file name} binfile
