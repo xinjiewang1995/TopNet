@@ -9,8 +9,7 @@ import glob
 import h5py
 from networkTool import trainDataRoot,levelNumK
 IMG_EXTENSIONS = [
-    'MPEG',
-    'MVUB'
+    'Kitti'
 ]
 
 
@@ -46,8 +45,8 @@ class DataFolder(data.Dataset):
         self.TreePoint = TreePoint
         self.fileLen = len(self.dataNames)
         assert self.fileLen>0,'no file found!'
-        self.dataLenPerFile = dataLenPerFile # you can replace 'dataLenPerFile' with the certain number in the 'calcdataLenPerFile'
-        # self.dataLenPerFile = self.calcdataLenPerFile() # you can comment this line after you ran the 'calcdataLenPerFile'
+        # self.dataLenPerFile = dataLenPerFile # you can replace 'dataLenPerFile' with the certain number in the 'calcdataLenPerFile'
+        self.dataLenPerFile = self.calcdataLenPerFile() # you can comment this line after you ran the 'calcdataLenPerFile'
         
     def calcdataLenPerFile(self):
         dataLenPerFile = 0
@@ -56,7 +55,9 @@ class DataFolder(data.Dataset):
             for i in range(cell.shape[1]):
                 dataLenPerFile+= mat[cell[0,i]].shape[2]
         dataLenPerFile = dataLenPerFile/self.fileLen
+        print('**'*40)
         print('dataLenPerFile:',dataLenPerFile,'you just use this function for the first time')
+        print('**'*40)
         return dataLenPerFile
 
     def __getitem__(self, index):
@@ -67,6 +68,7 @@ class DataFolder(data.Dataset):
                 a = [self.dataBuffer[0][self.index:].copy()]
             else:
                 a=[]
+                
             cell,mat = self.loader(filename)
             for i in range(cell.shape[1]):
                 data = np.transpose(mat[cell[0,i]]) #shape[ptNum,Kparent, Seq[1],Level[1],Octant[1],Pos[3] ] e.g 123456*7*6
@@ -77,11 +79,10 @@ class DataFolder(data.Dataset):
             self.dataBuffer.append(np.vstack(tuple(a)))
 
             self.datalen = self.dataBuffer[0].shape[0]
-            self.fileIndx+=200  # shuffle step = 1, will load continuous mat
+            self.fileIndx+=1  # shuffle step = 1, will load continuous mat
             self.index = 0
             if(self.fileIndx>=self.fileLen):
                 self.fileIndx=index%self.fileLen
-        # print(index)  
         # try read
         img = []
         img.append(self.dataBuffer[0][self.index:self.index+self.TreePoint])
@@ -94,18 +95,3 @@ class DataFolder(data.Dataset):
 
     def __len__(self):
         return int(self.dataLenPerFile*self.fileLen/self.TreePoint) # dataLen = octlen in total/TreePoint
-        
-if __name__=="__main__":
-
-    TreePoint = 4096*16 # the number of the continuous occupancy code in data, TreePoint*batch_size divisible by batchSize
-    batchSize = 32
-    train_set = DataFolder(root=trainDataRoot, TreePoint=TreePoint,transform=None,dataLenPerFile=356484.1) # will load (batch_size,TreePoint,...) shape data
-    train_loader = data.DataLoader(dataset=train_set, batch_size=1, shuffle=True, num_workers=4,drop_last=True)
-    print('total octrees(TreePoint*7): {}; total batches: {}'.format(len(train_set), len(train_loader)))
-
-    for batch, d in enumerate(train_loader):
-        data_source = d[0].reshape((batchSize,-1,4,6)).permute(1,0,2,3) #d[0] for geometry,d[1] for attribute
-        print(batch,data_source.shape)
-        # print(data_source[:,0,:,0])
-        # print(d[0][0],d[0].shape)
-# %%

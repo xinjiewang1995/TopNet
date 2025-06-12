@@ -17,21 +17,23 @@ def makedFile(dir):
     return fileList
 if __name__=="__main__":
 
-######For MPEG,MVUB######    
-    oriDir = '/8iVFBv2/longdress/Ply/*.ply'
-    outDir = 'Data/Obj/train/'
-    ptNamePrefix = 'MPEG_' # 'MVUB_'
+#####For KITTI######
+    oriDir = '/home/wxj/semanticKITTI/dataset/sequences/'
+    outDir = 'Data/Lidar/train/'
+    ptNamePrefix = 'Kitti_'
 
-    printl = CPrintl('Preparedata/makedFileObj.log')
+    printl = CPrintl('Preparedata/makedFileLidar.log')
     makeFileList = makedFile(outDir+'*.mat')
-    fileList = sorted(glob.glob(oriDir))
-    for n,file in enumerate(fileList):
-        fileName = file.split('/')[-1][:-4]
-        dataName = outDir+ptNamePrefix+fileName+'.mat'
-        if dataName in makeFileList:   
-            print(dataName,'maked!')
-            continue
-        dataPrepare(file,saveMatDir=outDir,ptNamePrefix=ptNamePrefix,offset=0,rotation=False)
-        # please set `rotation=True` in the `dataPrepare` function when processing MVUB data
-        if n%10==0:
-            printl(dataName)
+    for folder in range(0,11): # kitti folder, 00-10/11-21 folders for training/testing.
+        folder = '{:02d}'.format(folder)
+        fileList = sorted(glob.glob(oriDir+folder+'/velodyne/*.bin'))
+        for n,file in enumerate(fileList):
+            fileName = folder+file.split('/')[-1][:-4]
+            dataName = outDir+'Kitti_'+fileName+'.mat'
+            if dataName in makeFileList:   
+                print(dataName,'maked!')
+                continue
+            qlevel = 10
+            dataPrepare(file,saveMatDir=outDir,ptNamePrefix=ptNamePrefix+folder,offset='min',qs=2/(2**qlevel-1),normalize=True)
+            if n%10==0:
+                printl(dataName)

@@ -1,11 +1,17 @@
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 import numpy as np
 import h5py
+import random
 import os
+# import open3d as o3d
 from plyfile import PlyData
 import subprocess
+from scipy.spatial import KDTree
 
-PCERRORPATH = "file/pc_error"
-TEMPPATH = "temp/data/"
+ply2851Path = "file/2851.ply"
+PCERRORPATH = "./file/pc_error"
+TEMPPATH = "./temp/data/"
 
 def pcerror(pcRefer,pc,pcReferNorm,pcerror_cfg_params, pcerror_result,pcerror_path=PCERRORPATH):
   '''
@@ -32,7 +38,7 @@ def pcerror(pcRefer,pc,pcReferNorm,pcerror_cfg_params, pcerror_result,pcerror_pa
                               0: none (identity) 1: ITU-R BT.709 8: YCgCo-R
           --nbThreads=1       Number of threads used for parallel processing
   '''
-  if pcerror_result is not None:
+  if type(pcerror_result) is str:
     pcLabel =os.path.basename(pcerror_result).split(".")[0]
   else:
     pcLabel = "pt0"
@@ -43,7 +49,10 @@ def pcerror(pcRefer,pc,pcReferNorm,pcerror_cfg_params, pcerror_result,pcerror_pa
     write_ply_data(TEMPPATH+pcLabel+"pcRefer.ply",pcRefer)
     pcRefer = TEMPPATH + pcLabel + "pcRefer.ply"
   if pcerror_result is not None:
-    f = open(pcerror_result, 'a+')
+    if type(pcerror_result) is int:
+      f = pcerror_result
+    else:
+      f = open(pcerror_result, 'a+')
   else:
     import sys
     f = sys.stdout
@@ -57,10 +66,21 @@ def pcerror(pcRefer,pc,pcReferNorm,pcerror_cfg_params, pcerror_result,pcerror_pa
                 '-a', pcRefer, '-b', pc, '-n', pcReferNorm] + pcerror_cfg_params,
                 stdout=f, stderr=f)
 
+def distChamfer(f1, f2,scale=1.0):
+    f1/=scale
+    f2/=scale
+    tree = KDTree(f1,compact_nodes=False)
+    d1,_ = tree.query(f2,k=1,workers=-1,eps=0)
+    tree = KDTree(f2,compact_nodes=False)
+    d2,_ = tree.query(f1,k=1,workers=-1,eps=0)
+    return max(d1.mean(),d2.mean()) 
+  
 def loadply2(path,color_format='rgb'):
     plydata = PlyData.read(path)
     
     data = plydata.elements[0].data
+    # pcd.points 
+    # pcd = PyntCloud.from_file(path)
     points = np.asarray([data['x'],data['y'],data['z']]).T 
     if color_format!='geometry':
       if len(data.dtype)>=6 and color_format=='rgb':
@@ -72,6 +92,10 @@ def loadply2(path,color_format='rgb'):
           colors = np.array(colors).T
     else:
       colors = None
+    # pcd = o3d.io.read_point_cloud(path)
+    # o3d.visualization.draw_geometries([pcd])
+    # points = np.asarray(pcd.points)
+    # colors = np.asarray(pcd.colors)
     return points,colors
 
 def write_ply_data(filename, points,attributeName=[],attriType=[]): 

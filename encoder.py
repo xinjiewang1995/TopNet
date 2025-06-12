@@ -1,4 +1,3 @@
-from numpy import mod
 from Preparedata.data import dataPrepare
 from encoderTool import main
 from networkTool import reload,CPrintl,expName,device
@@ -6,14 +5,15 @@ from TopNet import model
 import glob,datetime,os
 import pt as pointCloud
 ############## warning ###############
-## decoder.py relys on this model here
+## decoder.py and test.py rely on this model here
 ## do not move this lines to somewhere else
 model = model.to(device)
-saveDic = reload(None,'modelsave/encoder_epoch_008_obj.pth')
+saveDic = reload(None,'modelsave/encoder_epoch_008_lidar.pth',multiGPU=False)
 model.load_state_dict(saveDic['encoder'])
 
-###########Objct##############
-list_orifile = ['file/Ply/boxer_viewdep_vox9.ply']
+###########LiDar##############
+GPCC_MULTIPLE = 2**20
+list_orifile = ['file/Ply/11_000000.bin']
 if __name__=="__main__":
     printl = CPrintl(expName+'/encoderPLY.txt')
     printl('_'*50,'OctAttention V0.4','_'*50)
@@ -21,14 +21,10 @@ if __name__=="__main__":
     printl('load checkpoint', saveDic['path'])
     for oriFile in list_orifile:
         printl(oriFile)
-        if (os.path.getsize(oriFile)>300*(1024**2)):#300M
-            printl('too large!')
-            continue
         ptName = os.path.splitext(os.path.basename(oriFile))[0]
-        for qs in [1]:
-            ptNamePrefix = ptName
-            matFile,DQpt,refPt = dataPrepare(oriFile,saveMatDir='./Data/testPly',qs=qs,ptNamePrefix='',rotation=False)
-            # please set `rotation=True` in the `dataPrepare` function when processing MVUB data
+        for qlevel in [12]:
+            matFile,DQpt,normalizePt = dataPrepare(oriFile,saveMatDir='./Data/testPly',offset='min', qs=2/(2**qlevel-1),rotation=False,normalize=True)
             main(matFile,model,actualcode=True,printl =printl) # actualcode=False: bin file will not be generated
             print('_'*50,'pc_error','_'*50)
-            pointCloud.pcerror(refPt,DQpt,None,'-r 1023',None).wait()
+            pointCloud.pcerror(normalizePt,DQpt,None,'-r 1',None).wait()
+            print('cd %e'%pointCloud.distChamfer(normalizePt,DQpt))
