@@ -33,7 +33,7 @@ if __name__=="__main__":
             if dataName in makeFileList:   
                 print(dataName,'maked!')
                 continue
-            qlevel = 10
+            qlevel = 12
             dataPrepare(file,saveMatDir=outDir,ptNamePrefix=ptNamePrefix+folder,offset='min',qs=2/(2**qlevel-1),normalize=True)
             if n%10==0:
                 printl(dataName)
