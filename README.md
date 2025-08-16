@@ -1,4 +1,4 @@
-# TopNet: Transformer-Efficient Occupancy Prediction Network for Octree-Structured Point Cloud Geometry Compression. CVPR 2025 [Paper](https://openaccess.thecvf.com/content/CVPR2025/papers/Wang_TopNet_Transformer-Efficient_Occupancy_Prediction_Network_for_Octree-Structured_Point_Cloud_Geometry_CVPR_2025_paper.pdf)
+# TopNet: Transformer-Efficient Occupancy Prediction Network for Octree-Structured Point Cloud Geometry Compression. CVPR 2025 [Paper](https://ieeexplore.ieee.org/document/11093721)
 
 
 ## Abstract
